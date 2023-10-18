@@ -64,7 +64,8 @@ https://www.youtube.com/watch?v=ZtA-vr4f5VE
 ![image](https://github.com/2023-SMHRD-SW-Fullstack-1/TodoWedding/assets/130349912/91ca8d97-3ed7-4ff8-b911-71a6ac4821dc)
 
 ## 5. 시스템 아키텍쳐
-![image](https://github.com/2023-SMHRD-SW-Fullstack-1/TodoWedding/assets/130349912/607c764a-415b-4115-b926-2979f17f460a)
+![image](https://github.com/2023-SMHRD-SW-Fullstack-1/TodoWedding/assets/130349912/8d370a38-20e6-4ec6-bc5d-ff79e5a9d0d3)
+
 
 ## 6. 주요 메뉴 구성도
 ![image](https://github.com/2023-SMHRD-SW-Fullstack-1/TodoWedding/assets/130349912/fc7b356c-e7df-42d8-b924-81c3ce97cbac)

@@ -45,6 +45,9 @@ const Header = () => {
           let date = res.data * -1;
           setMarryDt("+" + date);
         }
+      })
+      .catch((err) => {
+        console.log("결혼일 조회 에러 : ", err);
       });
   };
 

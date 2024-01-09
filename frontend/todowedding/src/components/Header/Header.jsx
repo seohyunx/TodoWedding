@@ -29,6 +29,9 @@ const Header = () => {
   //d-day 정보
   const [marryDt, setMarryDt] = useState();
 
+  //헤더 상태 변수
+  const [headerType, setHeaderType] = useState(null);
+
   //결혼일 조회
   const findMarryDt = () => {
     axios

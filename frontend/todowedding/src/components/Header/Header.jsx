@@ -22,75 +22,80 @@ import AdminHeader from "./Admin";
  */
 
 const Header = () => {
-    //리덕스에서 사용자 정보 가져오기
-    const token = useSelector((state) => state.Auth.token);
-    //유저 닉네임
-    const [loginUserNickname, setLoginUserNickname] = useState();
-    //d-day 정보
-    const [marryDt, setMarryDt] = useState();
+  //리덕스에서 사용자 정보 가져오기
+  const token = useSelector((state) => state.Auth.token);
+  //유저 닉네임
+  const [loginUserNickname, setLoginUserNickname] = useState();
+  //d-day 정보
+  const [marryDt, setMarryDt] = useState();
 
-    //헤더 상태 변수
-    const [headerType, setHeaderType] = useState(null);
-
-    //결혼일 조회
-    const findMarryDt = () => {
-        axios
-            .get(`${process.env.REACT_APP_API_URL}/marry-d-day/${token.userSeq}`)
-            .then((res) => {
-                if (res.data === 9999) {
-                    return;
-                } else if (res.data >= 0) {
-                    setMarryDt("-" + res.data);
-                } else {
-                    let date = res.data * -1;
-                    setMarryDt("+" + date);
-                }
-            })
-            .catch((err) => {
-                console.log("결혼일 조회 에러 : ", err);
-            });
-    };
-
-    //Admin 계정 여부 확인
-    const isAdmin = () => {
-        axios.get(`${process.env.REACT_APP_API_URL}/admin/${token.userSeq}`).then((res) => {
-            if (res.data === "Y") {
-                setLoginUserNickname(token.userNick);
-                setHeaderType("admin");
-            } else {
-                setLoginUserNickname(token.userNick);
-                setHeaderType("partner");
-            }
-        });
-    };
-
-    //토큰 정보 확인 후 헤더 결정
-    useEffect(() => {
-        if (token != null) {
-            if (token.type === "M") {
-                const selectUserInfo = async () => {
-                    await setHeaderType("member");
-                    await setLoginUserNickname(token.userNick);
-                    await findMarryDt();
-                };
-                setLoginUserNickname(token.userNick);
-                selectUserInfo();
-            } else {
-                isAdmin();
-            }
+  //결혼일 조회
+  const findMarryDt = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/marry-d-day/${token.userSeq}`)
+      .then((res) => {
+        if (res.data === 9999) {
+          return;
+        } else if (res.data >= 0) {
+          setMarryDt("-" + res.data);
         } else {
-            setHeaderType("notLogined");
+          let date = res.data * -1;
+          setMarryDt("+" + date);
         }
-    }, [token]);
+      })
+      .catch((err) => {
+        console.log("결혼일 조회 에러 : ", err);
+      });
+  };
 
-    return (
-        <>
-            {headerType === "member" && <MemberHeader marryDt={marryDt} loginUserNickname={loginUserNickname} />}
-            {headerType === "partner" && <PartnerHeader loginUserNickname={loginUserNickname} />}
-            {headerType === "admin" && <AdminHeader loginUserNickname={loginUserNickname} />}
-            {headerType === "notLogined" && <NotLoginedHeader />}
-        </>
-    );
+  //Admin 계정 여부 확인
+  const isAdmin = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/admin/${token.userSeq}`)
+      .then((res) => {
+        if (res.data === "Y") {
+          setLoginUserNickname(token.userNick);
+          setHeaderType("admin");
+        } else {
+          setLoginUserNickname(token.userNick);
+          setHeaderType("partner");
+        }
+      });
+  };
+
+  //토큰 정보 확인 후 헤더 결정
+  useEffect(() => {
+    if (token != null) {
+      if (token.type === "M") {
+        const selectUserInfo = async () => {
+          await setHeaderType("member");
+          await setLoginUserNickname(token.userNick);
+          await findMarryDt();
+        };
+        setLoginUserNickname(token.userNick);
+        selectUserInfo();
+      } else {
+        isAdmin();
+      }
+    } else {
+      setHeaderType("notLogined");
+    }
+  }, [token]);
+
+  return (
+    <>
+      {headerType === "member" && (
+        <MemberHeader marryDt={marryDt} loginUserNickname={loginUserNickname} />
+      )}
+      {headerType === "partner" && (
+        <PartnerHeader loginUserNickname={loginUserNickname} />
+      )}
+      {headerType === "admin" && (
+        <AdminHeader loginUserNickname={loginUserNickname} />
+      )}
+      {headerType === "notLogined" && <NotLoginedHeader />}
+    </>
+  );
 };
 
 export default Header;

@@ -9,7 +9,7 @@ import TodoLogo from "../../assets/images/Logo/todo_logo.png";
  * 작성일 : 2023.09.06
  */
 
-function Modal() {
+function Modal(props) {
   function closeModal() {
     props.closeModal();
   }

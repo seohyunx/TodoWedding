@@ -45,6 +45,9 @@ const Main = () => {
           if (error.response) {
             alert("세션이 만료되었습니다. 다시 로그인해주세요.");
 
+            // 세션 값 삭제 및 로그아웃 처리
+            dispatch(deleteToken());
+
             // 메인 페이지로 이동
             nav("/");
           }

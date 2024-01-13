@@ -19,137 +19,142 @@ import SlickSlider from "./SlickSlider";
  */
 
 const Main = () => {
-    const nav = useNavigate();
+  const nav = useNavigate();
 
-    const [checkItems, setCheckItems] = useState([]);
-    const [checklist, setChecklist] = useState([]);
+  const [checkItems, setCheckItems] = useState([]);
+  const [checklist, setChecklist] = useState([]);
 
-    //추가 : 2023.09.25 토큰 유무 확인 유광작성 카카오 토큰 사용자 유효성 확인
-    const token = useSelector((state) => state.Auth.token);
-    const dispatch = useDispatch();
+  //추가 : 2023.09.25 토큰 유무 확인 유광작성 카카오 토큰 사용자 유효성 확인
+  const token = useSelector((state) => state.Auth.token);
+  const dispatch = useDispatch();
 
-    useEffect(() => {
-        // console.log("Token:", token); // 토큰 값 확인
+  useEffect(() => {
+    // console.log("Token:", token); // 토큰 값 확인
 
-        if (token) {
-            // 토큰 유효성 확인경로
-            axios
-                .get("https://kapi.kakao.com/v1/user/access_token_info", {
-                    headers: { Authorization: `Bearer ${token.accessToken}` },
-                })
-                .then((response) => {
-                    // console.log("토큰이 유효합니다");
-                })
-                .catch((error) => {
-                    console.log("토큰 검증 중 오류 발생:", error);
-                    if (error.response) {
-                        alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-
-                        // 세션 값 삭제 및 로그아웃 처리
-                        dispatch(deleteToken());
-
-                        // 메인 페이지로 이동
-                        nav("/");
-                    }
-                });
-        } else {
-            // 세션 값 삭제 및 로그아웃 처리
-            dispatch(deleteToken());
+    if (token) {
+      // 토큰 유효성 확인경로
+      axios
+        .get("https://kapi.kakao.com/v1/user/access_token_info", {
+          headers: { Authorization: `Bearer ${token.accessToken}` },
+        })
+        .then((response) => {
+          // console.log("토큰이 유효합니다");
+        })
+        .catch((error) => {
+          console.log("토큰 검증 중 오류 발생:", error);
+          if (error.response) {
+            alert("세션이 만료되었습니다. 다시 로그인해주세요.");
 
             // 메인 페이지로 이동
             nav("/");
-        }
-    }, [nav, dispatch, token]);
+          }
+        });
+    } else {
+      // 세션 값 삭제 및 로그아웃 처리
+      dispatch(deleteToken());
 
-    //웨딩 항목별 체크리스트 ----------------------------------------------------------------
-    useEffect(() => {
-        fetchCheckItems();
-    }, []);
+      // 메인 페이지로 이동
+      nav("/");
+    }
+  }, [nav, dispatch, token]);
 
-    // 항목별 체크리스트 전체 조회
-    const fetchCheckItems = async () => {
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/checkitem`);
-            setCheckItems(response.data);
-            // console.log("항목별 체크리스트 : ", response.data);
-        } catch (error) {
-            console.error("checkitem 전체 불러오기 error : ", error);
-        }
+  //웨딩 항목별 체크리스트 ----------------------------------------------------------------
+  useEffect(() => {
+    fetchCheckItems();
+  }, []);
+
+  // 항목별 체크리스트 전체 조회
+  const fetchCheckItems = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/checkitem`
+      );
+      setCheckItems(response.data);
+      // console.log("항목별 체크리스트 : ", response.data);
+    } catch (error) {
+      console.error("checkitem 전체 불러오기 error : ", error);
+    }
+  };
+
+  //항목 클릭하면 해당 체크리스트로 이동
+  const handleClick = (item) => {
+    nav(`/checkitem/${item.check_item_seq}`, { state: item });
+    // console.log("항목 클릭하면 해당 체크리스트로 이동 : ", item.check_item_seq);
+  };
+  //--------------------------------------------------------------------------------------
+
+  //웨딩 D-Day 체크리스트------------------------------------------------------------------
+  useEffect(() => {
+    const fetch = async () => {
+      await getDayChecklist();
     };
 
-    //항목 클릭하면 해당 체크리스트로 이동
-    const handleClick = (item) => {
-        nav(`/checkitem/${item.check_item_seq}`, { state: item });
-        // console.log("항목 클릭하면 해당 체크리스트로 이동 : ", item.check_item_seq);
-    };
-    //--------------------------------------------------------------------------------------
+    fetch();
+  }, []);
 
-    //웨딩 D-Day 체크리스트------------------------------------------------------------------
-    useEffect(() => {
-        const fetch = async () => {
-            await getDayChecklist();
-        };
+  //D-Day 체크리스트 전체 조회
+  const getDayChecklist = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/daychecklist`
+      );
+      setChecklist(response.data);
+      // console.log("D-Day 체크리스트 : ", response.data);
+    } catch (error) {
+      console.error("D-Day 리스트 error : ", error);
+    }
+  };
 
-        fetch();
-    }, []);
+  //항목 클릭하면 해당 체크리스트로 이동
+  const handleDdayClick = (item) => {
+    nav(`/daychecklist/${item.checkday_seq}`, { state: item });
+  };
+  //--------------------------------------------------------------------------------------
 
-    //D-Day 체크리스트 전체 조회
-    const getDayChecklist = async () => {
-        try {
-            const response = await axios.get(`${process.env.REACT_APP_API_URL}/daychecklist`);
-            setChecklist(response.data);
-            // console.log("D-Day 체크리스트 : ", response.data);
-        } catch (error) {
-            console.error("D-Day 리스트 error : ", error);
-        }
-    };
-
-    //항목 클릭하면 해당 체크리스트로 이동
-    const handleDdayClick = (item) => {
-        nav(`/daychecklist/${item.checkday_seq}`, { state: item });
-    };
-    //--------------------------------------------------------------------------------------
-
-    return (
-        <div style={{ height: "700px" }}>
-            <div>
-                <SlickSlider />
-            </div>
-            <div style={{ display: "flex" }}>
-                <p className="main-itemchecklist">
-                    웨딩 항목별
-                    <br />
-                    체크리스트
-                </p>
-                <div className="main-itemchecklist-container">
-                    {checkItems.map((item, index) => (
-                        <button
-                            className="main-itemchecklist-item"
-                            id="main-itemchecklist-item1"
-                            key={index}
-                            onClick={() => handleClick(item)}
-                        >
-                            <p>{item.check_item_contents}</p>
-                        </button>
-                    ))}
-                </div>
-            </div>
-            <div style={{ display: "flex" }}>
-                <p className="main-ddaychecklist">
-                    D-Day
-                    <br />
-                    체크리스트
-                </p>
-                <div className="main-ddaychecklist-container">
-                    {checklist.map((item, index) => (
-                        <button className="main-itemchecklist-item" key={index} onClick={() => handleDdayClick(item)}>
-                            <p>{item.checkday_contents}</p>
-                        </button>
-                    ))}
-                </div>
-            </div>
+  return (
+    <div style={{ height: "700px" }}>
+      <div>
+        <SlickSlider />
+      </div>
+      <div style={{ display: "flex" }}>
+        <p className="main-itemchecklist">
+          웨딩 항목별
+          <br />
+          체크리스트
+        </p>
+        <div className="main-itemchecklist-container">
+          {checkItems.map((item, index) => (
+            <button
+              className="main-itemchecklist-item"
+              id="main-itemchecklist-item1"
+              key={index}
+              onClick={() => handleClick(item)}
+            >
+              <p>{item.check_item_contents}</p>
+            </button>
+          ))}
         </div>
-    );
+      </div>
+      <div style={{ display: "flex" }}>
+        <p className="main-ddaychecklist">
+          D-Day
+          <br />
+          체크리스트
+        </p>
+        <div className="main-ddaychecklist-container">
+          {checklist.map((item, index) => (
+            <button
+              className="main-itemchecklist-item"
+              key={index}
+              onClick={() => handleDdayClick(item)}
+            >
+              <p>{item.checkday_contents}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Main;
